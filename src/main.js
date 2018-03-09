@@ -3,7 +3,7 @@ const niddEvent = require('./lib/NIDDEvent').createNiddEvent();
 const { initWorkstations } = require('./lib/initWorkstations');
 const { Workstation } = require('./lib/Workstation');
 
-let eventList = [];
+const eventList = [];
 const watcher = fork('db-watcher.js');
 let stations = null;
 
@@ -55,35 +55,25 @@ function processEvent(event) {
     if (!event) return null;
 
     console.log('-> eventList.length =', eventList.length)
+
     setStationsReady(event.srcStation, event.dstStation, false);
-    const processor = fork('event-processor.js');
+
     console.log('-> sending event to processor: ', event.alert);
+    const processor = fork('event-processor.js');
     processor.send(event);
+
     processor.on('message', ready => {
         setStationsReady(event.srcStation, event.dstStation, true);
     });
 }
 
 function getNextEventFromQueue() {
-    let event = null;
-    let newEventList = [];
-    for (let i = 0; i < eventList.length; ++i) {
-        if (!event) {
-            if (eventList[i].srcStation.camera.ready &&
-                eventList[i].dstStation.camera.ready) {
-                event = eventList[i];
-            }
-            else {
-                newEventList.push(eventList[i]);
-            }
-        }
-        else {
-            newEventList.push(eventList[i]);
+    for (let i = 0, len = eventList.length; i < len; ++i) {
+        if (eventList[i].srcStation.camera.ready &&
+            eventList[i].dstStation.camera.ready) {
+            return eventList.splice(i, 1)[0];
         }
     }
-    eventList = newEventList;
-
-    return event;
 }
 
 function setStationsReady(s1, s2, ready) {
