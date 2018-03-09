@@ -64,6 +64,7 @@ typeorm.createConnection(options)
     const  tcpRepository = connection.getRepository(TcpHdrModel);
     const  udpRepository = connection.getRepository(UdpHdrModel);
 
+    /*
     const dataTable = await dataRepository.find();
     const detailTable = await detailRepository.find();
     const encodingTable = await encodingRepository.find();
@@ -97,6 +98,66 @@ typeorm.createConnection(options)
     console.log(sigRefTable);
     console.log(tcpTable);
     console.log(udpTable);
+    */
+
+    const eventRow = await eventRepository.find();
+    //console.log(eventRow);
+
+    const sensorRow = await sensorRepository.findOne({ sid: eventRow[0].sid });
+    //console.log(sensorRow);
+
+    const sigRow = await sigRepository.findOne({
+        sig_id: eventRow[0].signature
+    });
+    //console.log(sigRow);
+
+    const ipRow = await ipRepository.findOne({
+        sid: eventRow[0].sid,
+        cid: eventRow[0].cid
+    });
+    //console.log(ipRow);
+
+    const tcpRow = await tcpRepository.findOne({
+        sid: eventRow[0].sid,
+        cid: eventRow[0].cid
+    });
+    //console.log(tcpRow);
+
+    const udpRow = await udpRepository.findOne({
+        sid: eventRow[0].sid,
+        cid: eventRow[0].cid
+    });
+    //console.log(udpRow);
+
+    const icmpRow = await icmpRepository.findOne({
+        sid: eventRow[0].sid,
+        cid: eventRow[0].cid
+    });
+    //console.log(icmpRow);
+
+    const snortAlert = {
+        sid: eventRow[0].sid,
+        cid: eventRow[0].cid,
+        hostname: sensorRow.hostname,
+        interface: sensorRow.interface,
+        signature: eventRow[0].signature,
+        timestamp: eventRow[0].timestamp,
+        sig_priority: sigRow.sig_priority,
+        sig_gid: sigRow.sig_gid,
+        sig_name: sigRow.sigName,
+        sig_rev: sigRow.sig_rev,
+        ip_src: ipRow.ip_src,
+        ip_dst: ipRow.ip_dst,
+        ip_ver: ipRow.ip_ver,
+        ip_proto: ipRow.ip_proto,
+        tcp_sport: tcpRow.tcp_sport,
+        tcp_dport: tcpRow.tcp_dport,
+        udp_sport: udpRow.udp_sport,
+        udp_dport: udpRow.udp_dport,
+        icmp_type: icmpRow.icmp_type,
+        icmp_code: icmpRow.icmp_code
+    };
+    console.log(snortAlert);
 
     await connection.close();
 })
