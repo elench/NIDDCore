@@ -248,9 +248,9 @@ function cam_callback(err) {
 }
 
 const cam_obj = {
-    hostname: '10.0.0.64',
+    hostname: '10.10.10.102',
     username: 'admin',
-    password: 'neur0mancer',
+    password: 'nidd01234',
     port: 80
 };
 

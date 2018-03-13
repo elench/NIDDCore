@@ -33,6 +33,46 @@ process.on('message', event => {
     let srcMedia = null;
     let dstMedia = null;
 
+    if (srcStation.camera.hostname === dstStation.camera.hostname) {
+        performActionSequence(srcStation)
+        .then(async media => {
+            console.log('-% media = ', media);
+            srcMedia = media;
+
+            media = await performActionSequence(dstStation);
+            console.log('-% media = ', media);
+            dstMedia = media;
+
+            report = await writeReport();
+            console.log('-% report has been saved:', report);
+
+            process.send(0);
+            process.exit(0);
+        })
+        .catch(err => {
+            console.log(err);
+            process.exit(1);
+        });
+    }
+    else {
+        Promise.all([
+            performActionSequence(srcStation),
+            performActionSequence(dstStation)
+        ])
+        .then(values => {
+            console.log('Values:', values);
+            process.send(0);
+            process.exit(0);
+        })
+        .catch(err => {
+            console.log(err);
+            process.exit(1);
+        });
+    }
+
+
+
+ /*
     performActionSequence(srcStation)
     .then(async media => {
         console.log('-% media = ', media);
@@ -52,6 +92,7 @@ process.on('message', event => {
         console.log(err);
         process.exit(1);
     });
+*/
 
     function performActionSequence(station) {
         if (station.user.firstName === 'public') {
@@ -68,11 +109,15 @@ process.on('message', event => {
             msg = await station.gotoLocation(niddCam);
             console.log(`-% ${msg}`);
 
-            console.log('-% calling station.getSnapshot()');
-            msg = await station.getSnapshot(niddCam);
-            console.log(`-% ${msg}`);
+            //console.log('-% calling station.getSnapshot()');
+            //msg = await station.getSnapshot(niddCam);
+            //console.log(`-% ${msg}`);
 
-            msg = await storeSnapshot(msg, niddCam);
+            const uri =
+            `http://${niddCam.hostname}/onvifsnapshot/media_service/snapshot?channel=1&subtype=0`;
+
+            console.log('uri:', uri);
+            msg = await storeSnapshot(uri, niddCam);
 
             return msg;
         })
@@ -93,11 +138,14 @@ process.on('message', event => {
                     + '.jpg';
                 const myMedia = new Media(path, timestamp);
 
-                req.get(uri)
-                    .auth(niddCam.username, niddCam.password, false)
-                    .pipe(fs.createWriteStream(path).on('finish', () => {
-                        resolve(myMedia);
-                    }));
+                req.get(uri, { timeout: 30000 })
+                .on('response', res => {
+                    console.log(`${niddCam.hostname} - ${res.statusCode}`);
+                })
+                .auth(niddCam.username, niddCam.password, true)
+                .pipe(fs.createWriteStream(path).on('finish', () => {
+                    resolve(myMedia);
+                }));
             }, 2500);
         });
     }

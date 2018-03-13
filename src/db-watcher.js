@@ -23,6 +23,7 @@ const watcher = eventWatcher.add(
     'niddcore.fakealert',
     function(oldRow, newRow, event) {
 
+        /*
         const set = new Set([previousAlert.src_ip, previousAlert.dst_ip,
             newRow.fields.src_ip, newRow.fields.dst_ip]);
 
@@ -33,6 +34,8 @@ const watcher = eventWatcher.add(
             previousAlert = newRow.fields;
             process.send(newRow.fields);
         }
+        */
+            process.send(newRow.fields);
 
     }
 );

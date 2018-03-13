@@ -3,7 +3,7 @@ const fs = require('fs');
 const { NIDDCamera } = require('../lib/NIDDCamera');
 
 const properties = {
-    hostname : '10.0.0.65',
+    hostname : '10.10.10.59',
     username : 'admin',
     password : 'neur0mancer',
     port : 80
@@ -14,24 +14,14 @@ const camera = null;
 
 new NIDDCamera(properties).connect().then(async camera => {
 
-    /*
-    let msg = await camera.get_something();
-    console.log(msg);
-    */
-
-    //let secondCamera = await new NIDDCamera(properties).connect();
-    // const uri = await camera.get_snapshot();
-
-    const uri = await camera.get_snapshot();
-    //const uri = `http://${camera.hostname}/cgi-bin/snapshot.cgi`;
+    const uri =  `http://${camera.username}:${camera.password}@${camera.hostname}/onvifsnapshot/media_service/snapshot?channel=1&subtype=0`;
+    console.log(uri);
     let msg;
 
-    for (let i = 0; i < 1000; ++i) {
-        //msg = await camera.goto_preset(2);
+    for (let i = 0; i < 1; ++i) {
         msg = await camera.goto_preset(i % 4 + 1);
         msg = await getRequest(uri);
         console.log(`${i}: ${msg}`)
-        //console.log(msg);
     }
     //console.log(await camera.get_something());
 
@@ -44,15 +34,24 @@ function getRequest(uri) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             let fecha = new Date();
-            req.get(uri, { timeout: 60000 })
+            req({url: uri}, (err, response, body) => {
+
+                console.log(uri);
+                console.log(response.statusCode);
+            });
+            /*
+            .on('response', res => {
+                console.log(res);
+            })
             .on('error', err => reject(err))
-            .auth('admin', 'neur0mancer', false)
+            //.auth('admin', 'neur0mancer', false)
             .pipe(fs.createWriteStream(
                 `../../snapshots/${fecha.getMinutes()}-${fecha.getSeconds()}.jpg`)
                 .on('finish', () => {
                     resolve('finish!');
                 })
             );
+            */
         }, 2500)
     });
 }
