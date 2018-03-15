@@ -20,9 +20,9 @@ const options = {
     type: 'mysql',
     host: 'localhost',
     port: 3306,
-    username: 'root',
-    password: 'toor',
-    database: 'snortdb_fake',
+    username: 'dbwatcher',
+    password: 'nidd2018',
+    database: 'niddtestdb',
     synchronize: true,
     logging: false,
     entitySchemas: [
@@ -50,7 +50,6 @@ typeorm.createConnection(options)
     const  dataRepository = connection.getRepository(DataModel);
     const  detailRepository = connection.getRepository(DetailModel);
     const  encodingRepository = connection.getRepository(EncodingModel);
-    const  eventRepository = connection.getRepository(EventModel);
     const  icmpRepository = connection.getRepository(IcmpHdrModel);
     const  ipRepository = connection.getRepository(IpHdrModel);
     const  optRepository = connection.getRepository(OptModel);
@@ -63,7 +62,7 @@ typeorm.createConnection(options)
     const  sigRefRepository = connection.getRepository(SigReferenceModel);
     const  tcpRepository = connection.getRepository(TcpHdrModel);
     const  udpRepository = connection.getRepository(UdpHdrModel);
-
+    const  eventRepository = connection.getRepository(EventModel);
     /*
     const dataTable = await dataRepository.find();
     const detailTable = await detailRepository.find();
@@ -101,61 +100,61 @@ typeorm.createConnection(options)
     */
 
     const eventRow = await eventRepository.find();
-    //console.log(eventRow);
+    console.log(eventRow);
 
-    const sensorRow = await sensorRepository.findOne({ sid: eventRow[0].sid });
+    const sensorRow = await sensorRepository.findOne({ sid: eventRow[eventRow.length - 1].sid });
     //console.log(sensorRow);
 
     const sigRow = await sigRepository.findOne({
-        sig_id: eventRow[0].signature
+        sig_id: eventRow[eventRow.length - 1].signature
     });
     //console.log(sigRow);
 
     const ipRow = await ipRepository.findOne({
-        sid: eventRow[0].sid,
-        cid: eventRow[0].cid
+        sid: eventRow[eventRow.length - 1].sid,
+        cid: eventRow[eventRow.length - 1].cid
     });
     //console.log(ipRow);
 
     const tcpRow = await tcpRepository.findOne({
-        sid: eventRow[0].sid,
-        cid: eventRow[0].cid
+        sid: eventRow[eventRow.length - 1].sid,
+        cid: eventRow[eventRow.length - 1].cid
     });
     //console.log(tcpRow);
 
     const udpRow = await udpRepository.findOne({
-        sid: eventRow[0].sid,
-        cid: eventRow[0].cid
+        sid: eventRow[eventRow.length - 1].sid,
+        cid: eventRow[eventRow.length - 1].cid
     });
     //console.log(udpRow);
 
     const icmpRow = await icmpRepository.findOne({
-        sid: eventRow[0].sid,
-        cid: eventRow[0].cid
+        sid: eventRow[eventRow.length - 1].sid,
+        cid: eventRow[eventRow.length - 1].cid
     });
     //console.log(icmpRow);
 
     const snortAlert = {
-        sid: eventRow[0].sid,
-        cid: eventRow[0].cid,
-        hostname: sensorRow.hostname,
-        interface: sensorRow.interface,
-        signature: eventRow[0].signature,
-        timestamp: eventRow[0].timestamp,
-        sig_priority: sigRow.sig_priority,
-        sig_gid: sigRow.sig_gid,
-        sig_name: sigRow.sigName,
-        sig_rev: sigRow.sig_rev,
-        ip_src: ipRow.ip_src,
-        ip_dst: ipRow.ip_dst,
-        ip_ver: ipRow.ip_ver,
-        ip_proto: ipRow.ip_proto,
-        tcp_sport: tcpRow.tcp_sport,
-        tcp_dport: tcpRow.tcp_dport,
-        udp_sport: udpRow.udp_sport,
-        udp_dport: udpRow.udp_dport,
-        icmp_type: icmpRow.icmp_type,
-        icmp_code: icmpRow.icmp_code
+        sid         : eventRow[eventRow.length - 1].sid,
+        cid         : eventRow[eventRow.length - 1].cid,
+        hostname    : sensorRow ? sensorRow.hostname : null,
+        interface   : sensorRow ? sensorRow.interface : null,
+        signature   : eventRow[eventRow.length - 1].signature,
+        timestamp   : eventRow[eventRow.length - 1].timestamp,
+        sig_priority: sigRow ? sigRow.sig_priority : null,
+        sig_gid     : sigRow ? sigRow.sig_gid : null,
+        sig_name    : sigRow ? sigRow.sigName : null,
+        sig_rev     : sigRow ? sigRow.sig_rev : null,
+        ip_src      : ipRow ? ipRow.ip_src : null,
+        ip_dst      : ipRow ? ipRow.ip_dst : null,
+        ip_ver      : ipRow ? ipRow.ip_ver : null,
+        ip_proto    : ipRow ? ipRow.ip_proto : null,
+        tcp_sport   : tcpRow ? tcpRow.tcp_sport : null,
+        tcp_dport   : tcpRow ? tcpRow.tcp_dport : null,
+        udp_sport   : udpRow ? udpRow.udp_sport : null,
+        udp_dport   : udpRow ? udpRow.udp_dport : null,
+        icmp_type   : icmpRow ? icmpRow.icmp_type : null,
+        icmp_code   : icmpRow ? icmpRow.icmp_code : null
     };
     console.log(snortAlert);
 

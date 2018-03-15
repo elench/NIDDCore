@@ -13,13 +13,13 @@
    "dependencies": {
       "@types/node": "^9.4.6",
       "keypress": "^0.2.1",
+      "knex": "^0.14.4",
       "mysql": "^2.14.1",
       "mysql-events": "0.0.11",
       "onvif": "^0.5.4",
       "reflect-metadata": "^0.1.10",
       "request": "^2.83.0",
       "tail": "^1.2.3",
-      "typeorm": "0.1.14",
       "yargs": "^11.0.0"
    },
    "devDependencies": {

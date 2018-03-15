@@ -189,22 +189,6 @@ INSERT INTO detail (detail_type, detail_text) VALUES (1, 'full');
 # mappings for tcp flags, protocols, and ports
 
 
-# insert into sig_reference (sig_id, ref_seq, ref_id) values(1, 1, 1);
-# insert into signature values(1, 'signature', 1, 1, 1, 1, 1);
-# insert into event (sid, cid, signature, timestamp) values(1, 1, 1, '2018-03-7 20:47:00');
-# insert into reference values(1, 1, 'ref_tag');
-# insert into reference_system values(1, 'ref_system_name');
-# insert into sig_class values(1, 'sig_class_name');
-# insert into sensor values(1, 'hostname', 'interface', 'filter', 1, 1, 1);
-# insert into iphdr values(1, 1, 167772227, 167772228, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-# insert into tcphdr values(1, 1, 22, 300, 1, 1, 1, 1, 1, 1, 1, 1);
-# insert into udphdr values(1, 1, 1, 1, 1, 1);
-# insert into icmphdr values(1, 1, 1, 1, 1, 1, 1);
-# insert into opt values(1, 1, 1, 1, 1, 1, 'opt_data');
-# insert into data values(1, 1, 'data_payload');
-
-
-
 /*
 # NIDDCore Entities
 CREATE TABLE pcuser ( 	pcuser_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -259,39 +243,13 @@ insert into workstation values(null, '3232235531', 2, 1, -0.182222, 0.922222, 0.
 insert into workstation values(null, '3232235532', 3, 1, -0.068889, 1.077778, 0.046875, 3);
 insert into workstation values(null, '3232235533', 4, 1, -0.073889, 0.084444, 0.007812, 4);
 insert into camera values(null, 167772224, 80, 'admin', 'neur0mancer');
+insert into camera values(null, 167772225, 80, 'admin', 'nidd01234');
 insert into building values(null, 'Laboratory');
 insert into building values(null, 'Pavilion');
 insert into room values(null, 'L301', 1);
 insert into room values(null, 'L302A', 1);
 insert into room values(null, 'P205', 2);
 
-CREATE TABLE niddreport (	
-    nidd_report_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	hostname    TEXT,
-    signature   INT      UNSIGNED NOT NULL,
-	timestamp 	   DATETIME NOT NULL,
-	ip_src      INT      UNSIGNED NOT NULL,
-	ip_dst      INT      UNSIGNED NOT NULL,
-	src_user_first_name VARCHAR(64),
-	src_user_last_name VARCHAR(64),
-	src_job_title VARCHAR(64),
-	src_office_room VARCHAR(16),
-	src_office_building VARCHAR(16),
-	src_phone_number VARCHAR(25),
-	src_email VARCHAR(64),
-	src_media_path TEXT,
-	src_media_timestamp DATETIME,
-	dst_user_first_name VARCHAR(64),
-	dst_user_last_name VARCHAR(64),
-	dst_job_title VARCHAR(64),
-	dst_office_room VARCHAR(16),
-	dst_office_building VARCHAR(16),
-	dst_phone VARCHAR(25),
-	dst_email VARCHAR(64),
-	dst_media_path TEXT,
-	dst_media_timestamp DATETIME,
-	PRIMARY KEY (nidd_report_id)
-);
 CREATE TABLE niddreport (	nidd_report_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 							sid 	  INT 	   UNSIGNED NOT NULL,
                       		cid 	  INT 	   UNSIGNED NOT NULL,

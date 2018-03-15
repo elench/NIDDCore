@@ -1,10 +1,23 @@
 const http = require('http');
-const Cam = require('onvif').Cam;
 const readline = require('readline');
 const keypress = require('keypress');
 const req = require('request');
 const fs = require('fs');
+const yargs = require('yargs');
+const Cam = require('onvif').Cam;
 
+const argv = configureYargs(yargs);
+
+const cam_obj = {
+    hostname: argv.hostname,
+    username: argv.username,
+    password: argv.password,
+    port: 80
+};
+
+function connect() {
+    return new Cam(cam_obj, cam_callback);
+}
 
 function cam_callback(err) {
     if (err)
@@ -247,19 +260,24 @@ function cam_callback(err) {
     }
 }
 
-const cam_obj = {
-    hostname: '10.10.10.102',
-    username: 'admin',
-    password: 'nidd01234',
-    port: 80
-};
-
-function connect() {
-    return new Cam(cam_obj, cam_callback);
+function configureYargs(yargs) {
+    return yargs
+        .option('hostname', {
+            alias: 'h',
+            describe: 'Camera IP address'
+        })
+        .option('username', {
+            alias: 'u',
+            describe: 'Camera username'
+        })
+        .option('password', {
+            alias: 'p',
+            describe: 'Camera password'
+        })
+        .demandCommand(['hostname', 'username', 'password'],
+            'Please provide camera credentials');
+        .help('help')
+        .argv;
 }
 
 connect();
-
-module.exports = {
-    connect
-}
