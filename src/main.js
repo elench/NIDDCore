@@ -17,20 +17,20 @@ initWorkstations().then(result => {
 });
 
 watcher.on('message', snortAlert => {
-    const event = {
-        snortAlert,
-        srcStation: stations[snortAlert.src_ip] ||
-                    stations['public'],
-        dstStation: stations[snortAlert.dst_ip] ||
-                    stations['public']
-    };
-
     console.log('|------- main: received event from watcher ------|');
-    console.log(event.snortAlert);
+    console.log(snortAlert);
     console.log('|------------------------------------------------|');
 
-    if (event.srcStation.user.userId === 'public' &&
-        event.dstStation.user.userId === 'public') {
+    const event = {
+        snortAlert,
+        srcStation: stations[snortAlert.ip_src] ||
+                    stations['void'],
+        dstStation: stations[snortAlert.ip_dst] ||
+                    stations['void']
+    };
+
+    if (event.srcStation.user.userId === '' &&
+        event.dstStation.user.userId === '') {
         console.log('-> event discarded');
     }
     else if (event.srcStation.camera.ready && event.dstStation.camera.ready) {

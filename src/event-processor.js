@@ -1,8 +1,8 @@
 const fs = require('fs');
 const req = require('request');
 const { Workstation } = require('./lib/Workstation');
-const { ReportModel } = require('./model/ReportModel');
 const { Media } = require('./lib/Media');
+const { decToIp } = require('./lib/ip-decimal');
 
 const knex = require('knex')({
     client: 'mysql',
@@ -22,7 +22,7 @@ process.on('message', event => {
 
     const srcStation = new Workstation(
         event.srcStation.user,
-        event.srcStation.ip,
+        decToIp(event.srcStation.ip),
         event.srcStation.camera,
         event.srcStation.pCoord,
         event.srcStation.tCoord,
@@ -31,7 +31,7 @@ process.on('message', event => {
     );
     const dstStation = new Workstation(
         event.dstStation.user,
-        event.dstStation.ip,
+        decToIp(event.dstStation.ip),
         event.dstStation.camera,
         event.dstStation.pCoord,
         event.dstStation.tCoord,
@@ -99,9 +99,9 @@ process.on('exit', code => {
 });
 
 function performActionSequence(station) {
-    if (station.user.firstName === 'public') {
+    if (station.user.firstName === '') {
         return new Promise((resolve, reject) => {
-            resolve(new Media('public', new Date()));
+            resolve(new Media('', new Date()));
         });
     }
 
@@ -121,7 +121,7 @@ function performActionSequence(station) {
         `http://${niddCam.hostname}/onvifsnapshot/media_service/snapshot?channel=1&subtype=0`;
 
         console.log('uri:', uri);
-        msg = await storeSnapshot(uri, niddCam);
+        msg = await storeSnapshot(uri, niddCam, station.ip);
 
         return msg;
     })
@@ -130,12 +130,13 @@ function performActionSequence(station) {
     });
 }
 
-function storeSnapshot(uri, niddCam) {
+function storeSnapshot(uri, niddCam, ip) {
     return new Promise((resolve, reject) => {
 
         setTimeout(() => {
             const timestamp = new Date();
             const path = process.cwd() + '/../snapshots/'
+                + ip + '_'
                 + timestamp.toLocaleDateString()
                 + '_'
                 + timestamp.toLocaleTimeString().split(':').join('-')
@@ -146,7 +147,7 @@ function storeSnapshot(uri, niddCam) {
             .on('response', res => {
                 console.log(`${niddCam.hostname} - ${res.statusCode}`);
             })
-            .auth(niddCam.username, niddCam.password, true)
+            .auth(niddCam.username, niddCam.password, false)
             .pipe(fs.createWriteStream(path).on('finish', () => {
                 resolve(myMedia);
             }));

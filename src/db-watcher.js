@@ -43,11 +43,11 @@ eventWatcher.add('niddtestdb.event',
                     prevAlert.ip_src = snortAlert.ip_src;
                     prevAlert.ip_dst = snortAlert.ip_dst;
                     prevAlert.signature = snortAlert.signature;
+                    process.send(snortAlert);
                     setTimeout(() => {
                         prevAlert = {};
                     }, 2000);
                 }
-                //process.send(snortAlert);
             })
             .catch(err => {
                 console.log(err);

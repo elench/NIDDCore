@@ -262,6 +262,12 @@ function cam_callback(err) {
 
 function configureYargs(yargs) {
     return yargs
+        .option('json', {
+            alias: 'j'
+        })
+        .config('json', 'JSON file containing IP camera properties')
+        .demandOption('json', 'You must enter path to JSON file')
+    /*
         .option('hostname', {
             alias: 'h',
             describe: 'Camera IP address'
@@ -276,6 +282,7 @@ function configureYargs(yargs) {
         })
         .demandCommand(['hostname', 'username', 'password'],
             'Please provide camera credentials');
+    */
         .help('help')
         .argv;
 }

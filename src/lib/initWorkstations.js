@@ -57,23 +57,23 @@ function initWorkstations() {
             )
         }
 
-        workstations['public'] = new Workstation(
+        workstations['void'] = new Workstation(
             new PCUser(
-                'public',
-                'public',
-                'public',
-                'public',
-                'public',
-                'public',
-                'public',
-                'public',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
             )
             , 0
             , new Camera(
-                '0.0.0.0',
+                '',
                 0,
-                'public',
-                'public'
+                '',
+                ''
             )
             , 0, 0, 0, 0
         );
