@@ -16,17 +16,17 @@ initWorkstations().then(result => {
     console.log('calling init():', err);
 });
 
-watcher.on('message', alert => {
+watcher.on('message', snortAlert => {
     const event = {
-        alert,
-        srcStation: stations[alert.src_ip] ||
+        snortAlert,
+        srcStation: stations[snortAlert.src_ip] ||
                     stations['public'],
-        dstStation: stations[alert.dst_ip] ||
+        dstStation: stations[snortAlert.dst_ip] ||
                     stations['public']
     };
 
     console.log('|------- main: received event from watcher ------|');
-    console.log(event.alert);
+    console.log(event.snortAlert);
     console.log('|------------------------------------------------|');
 
     if (event.srcStation.user.userId === 'public' &&
@@ -58,7 +58,7 @@ function processEvent(event) {
 
     setStationsReady(event.srcStation, event.dstStation, false);
 
-    console.log('-> sending event to processor: ', event.alert);
+    console.log('-> sending event to processor: ', event.snortAlert);
     const processor = fork('event-processor.js');
     processor.send(event);
 

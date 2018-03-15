@@ -19,10 +19,10 @@ const knex = require('knex')({
 
 let prevAlert = {};
 
-const watcher = eventWatcher.add(
-    'niddtestdb.event',
+eventWatcher.add('niddtestdb.event',
     function(oldRow, newRow, event) {
-
+        // Wait 200 milliseconds to give barnyard2 enough time to finish
+        // writing data to database
         setTimeout(() => {
             getSnortAlert(newRow.fields)
             .then(snortAlert => {
@@ -34,7 +34,8 @@ const watcher = eventWatcher.add(
                 ]);
                 console.log(set);
 
-                if (set.size === 2 && snortAlert.signature === prevAlert.signature) {
+                if (set.size === 2 &&
+                    snortAlert.signature === prevAlert.signature) {
                     console.log('-$ duplicate discarded');
                 }
                 else {

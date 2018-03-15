@@ -19,38 +19,14 @@ class Workstation {
             port: this.camera.port
         })
         .connect();
-        /*
-        .then(niddCam => {
-            return niddCam;
-        })
-        .catch(err => {
-            return err;
-        });
-        */
     }
 
     gotoLocation(niddCam) {
         return niddCam.goto_preset(this.preset);
-        /*
-        .then(msg => {
-            return msg;
-        })
-        .catch(err => {
-            return err;
-        });
-        */
     }
 
     getSnapshot(niddCam) {
         return niddCam.get_snapshot();
-        /*
-        .then(msg => {
-            return msg;
-        })
-        .catch(err => {
-            return err;
-        });
-        */
     }
 }
 

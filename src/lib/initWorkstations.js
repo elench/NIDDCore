@@ -1,105 +1,60 @@
-const typeorm = require('typeorm');
-const { CameraModel } = require('../model/CameraModel');
-const { JobTitleModel } = require('../model/JobTitleModel');
-const { BuildingModel } = require('../model/BuildingModel');
-const { RoomModel } = require('../model/RoomModel');
-const { WorkstationModel } = require('../model/WorkstationModel');
-const { PCUserModel } = require('../model/PCUserModel');
 const { Workstation } = require('./Workstation');
 const { PCUser } = require('./PCUser');
 const { Camera } = require('./Camera');
 const { decToIp } = require('./ip-decimal');
 
-const options = {
-    type: 'mysql',
-    host: 'localhost',
-    port: 3306,
-    username: 'niddadmin',
-    password: 'admin',
-    database: 'niddcore',
-    synchronize: true,
-    logging: false,
-    entitySchemas: [
-        require('../entity/WorkstationSchema'),
-        require('../entity/PCUserSchema'),
-        require('../entity/CameraSchema'),
-        require('../entity/JobTitleSchema'),
-        require('../entity/RoomSchema'),
-        require('../entity/BuildingSchema')
-    ]
-}
+const knex = require('knex')({
+    client: 'mysql',
+    connection: {
+        host: '127.0.0.1',
+        user: 'niddadmin',
+        password: 'nidd2018',
+        database: 'niddtestdb'
+    }
+});
 
 function initWorkstations() {
-    return typeorm.createConnection(options)
-    .then(async connection => {
-        const stationRepository = connection.getRepository(WorkstationModel);
-        const pcuserRepository = connection.getRepository(PCUserModel);
-        const cameraRepository = connection.getRepository(CameraModel);
-        const jobtitleRepository = connection.getRepository(JobTitleModel)
-        const roomRepository = connection.getRepository(RoomModel);
-        const buildingRepository = connection.getRepository(BuildingModel);
-
-        const stationTable = await stationRepository.find();
-        const cameraTable = await cameraRepository.find();
-        const pcuserTable = await pcuserRepository.find();
-        const roomTable = await roomRepository.find();
-        const buildingTable = await buildingRepository.find();
-        const jobtitleTable = await jobtitleRepository.find();
-
-        await connection.close();
-
+    return knex('workstation as w')
+    .innerJoin('camera as c', 'w.camera_id', '=', 'c.camera_id')
+    .innerJoin('pcuser as p', 'w.pcuser_id', '=', 'p.pcuser_id')
+    .innerJoin('jobtitle as j', 'p.job_title_id', '=', 'j.job_title_id')
+    .innerJoin('room as r', 'p.room_id', '=', 'r.room_id')
+    .innerJoin('building as b', 'r.building_id', '=', 'b.building_id')
+    .then(async joined => {
         const cameras = {};
-        for (let cameraEntity of cameraTable) {
-            cameras[cameraEntity.camera_id] = new Camera(
-                decToIp(parseInt(cameraEntity.hostname)),
-                cameraEntity.username,
-                cameraEntity.password,
-                cameraEntity.port
-            );
-        }
-        const buildings = {};
-        for (let buildingEntity of buildingTable) {
-            buildings[buildingEntity.building_id] = buildingEntity.building;
-
-        }
-        const rooms = {};
-        for (let roomEntity of roomTable) {
-            rooms[roomEntity.room_id] = {
-                room: roomEntity.room,
-                building_id: roomEntity.building_id
-            }
-        }
-
-        const jobtitles = {};
-        for (let jobtitleEntity of jobtitleTable) {
-            jobtitles[jobtitleEntity.job_title_id] = jobtitleEntity.job_title;
-        }
-
-        const pcusers = {};
-        for (let pcuserEntity of pcuserTable) {
-            pcusers[pcuserEntity.pcuser_id] = new PCUser(
-                pcuserEntity.user_id,
-                pcuserEntity.first_name,
-                pcuserEntity.last_name,
-                jobtitles[pcuserEntity.job_title_id],
-                rooms[pcuserEntity.room_id].room,
-                buildings[rooms[pcuserEntity.room_id].building_id],
-                pcuserEntity.phone,
-                pcuserEntity.email
-            )
-        }
-
         const workstations = {};
-        for (let stationEntity of stationTable) {
-            workstations[stationEntity.ip] = new Workstation(
-                pcusers[stationEntity.pcuser_id],
-                stationEntity.ip,
-                cameras[stationEntity.camera_id],
-                stationEntity.p_coordinate,
-                stationEntity.t_coordinate,
-                stationEntity.z_coordinate,
-                stationEntity.preset
+
+        for (index in joined) {
+            let station = joined[index];
+            let pcuser = new PCUser(
+                station.user_id,
+                station.first_name,
+                station.last_name,
+                station.job_title,
+                station.room,
+                station.building,
+                station.phone,
+                station.email
             );
+            let hostname = station.hostname;
+            if (!(hostname in cameras)) {
+                cameras[hostname] = new Camera(
+                    decToIp(parseInt(hostname)),
+                    station.user,
+                    station.password,
+                    station.port
+                )
+            }
+
+            workstations[station.ip] = new Workstation(
+                pcuser,
+                station.ip,
+                cameras[hostname],
+                station.p_coordinate,
+                station.t_coordinate,
+                station.z_coordinate,
+                station.preset
+            )
         }
 
         workstations['public'] = new Workstation(
@@ -122,11 +77,13 @@ function initWorkstations() {
             )
             , 0, 0, 0, 0
         );
+
         return workstations;
     })
     .catch(err => {
-        return 'Cannot connect:' + err;
-    });
+        return 'Cannot connect: ' + err;
+    })
+
 }
 
 module.exports = {
