@@ -14,15 +14,24 @@ const props = {
 
 const command = argv._[0];
 
-connectCamera(props).then(cam => {
+connectCamera(props).then(async cam => {
     if (command === 'get-presets') {
         return get_presets(cam);
     }
     else if (command === 'get-status') {
         return get_status(cam);
     }
+    else if (command === 'get-snapshot-uri') {
+        return get_snapshot_uri(cam);
+    }
     else if (command === 'get-stream-uri') {
         return get_stream_uri(cam);
+    }
+    else if (command === 'open-stream') {
+        let uri = await get_stream_uri(cam);
+        const uriArr = uri.split('//');
+        uri = `${uriArr[0]}//${props.username}:${props.password}@${uriArr[1]}`;
+        return open_stream(uri);
     }
     else if (command === 'goto-preset') {
         return goto_preset(cam, argv.preset);
@@ -37,7 +46,8 @@ connectCamera(props).then(cam => {
         return remove_preset(cam, argv.preset);
     }
     else if (command === 'take-snapshot') {
-        return take_snapshot(cam, argv.name, argv.path);
+        const uri = await get_snapshot_uri(cam);
+        return take_snapshot(cam, uri, argv.name, argv.path);
     }
     else if (command === 'reboot') {
         return reboot(cam);
@@ -127,6 +137,14 @@ function get_stream_uri(cam) {
     });
 }
 
+function open_stream(uri) {
+    return new Promise((resolve, reject) => {
+        const { spawn } = require('child_process');
+        const vlc = spawn('cvlc', [uri]);
+        resolve('Stream opened');
+    });
+}
+
 function remove_preset(cam, presetToken) {
     return new Promise((resolve, reject) => {
         cam.removePreset({ presetToken },
@@ -137,20 +155,24 @@ function remove_preset(cam, presetToken) {
     });
 }
 
-function take_snapshot(cam, name, path) {
+function get_snapshot_uri(cam) {
     return new Promise((resolve, reject) => {
-        cam.getSnapshotUri(function(err, media) {
+        cam.getSnapshotUri((err, media) => {
             if (err) reject(err);
-            name = `${name}.jpg`;
-
-            /*
-            req.get(media.uri)
-                .auth(cam.username, cam.password, false)
-                .pipe(fs.createWriteStream(`${path+name}`));
-            resolve(`Image saved to: ${path + name}`);
-                */
             resolve(media.uri);
         });
+    });
+
+}
+
+function take_snapshot(cam, uri, name, path) {
+    return new Promise((resolve, reject) => {
+        name = `${name}.jpg`;
+
+        req.get(uri)
+        .auth(cam.username, cam.password, false)
+        .pipe(fs.createWriteStream(`${path+name}`));
+        resolve(`Image saved to: ${path + name}`);
     });
 }
 
@@ -173,6 +195,8 @@ function configureYargs(yargs) {
         .command('get-presets', 'Display camera presets')
         .command('get-status', 'Display camera status')
         .command('get-stream-uri', 'Display stream URI')
+        .command('open-stream', 'Open camera stream using vlc')
+        .command('get-snapshot-uri', 'Display snapshot URI')
         .command('goto-preset', 'Move camera to provided preset', yargs => {
             yargs.option('preset', {
                 alias: 'p',

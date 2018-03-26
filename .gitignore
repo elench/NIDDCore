@@ -5,5 +5,5 @@ build/
 tmp/
 temp/
 playground/
-snapshots/
+public/snapshots/
 src/test/

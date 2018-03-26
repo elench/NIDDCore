@@ -135,7 +135,7 @@ function storeSnapshot(uri, niddCam, ip) {
 
         setTimeout(() => {
             const timestamp = new Date();
-            const path = process.cwd() + '/../snapshots/'
+            const path = process.cwd() + '/../public/snapshots/'
                 + ip + '_'
                 + timestamp.toLocaleDateString()
                 + '_'

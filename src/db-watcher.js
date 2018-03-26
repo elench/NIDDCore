@@ -43,7 +43,7 @@ eventWatcher.add('niddtestdb.event',
                     prevAlert.ip_src = snortAlert.ip_src;
                     prevAlert.ip_dst = snortAlert.ip_dst;
                     prevAlert.signature = snortAlert.signature;
-                    process.send(snortAlert);
+                    //process.send(snortAlert);
                     setTimeout(() => {
                         prevAlert = {};
                     }, 2000);
@@ -91,7 +91,7 @@ function getSnortAlert(snortEvent) {
             timestamp   : event.timestamp,
             sig_priority: signature ? signature.sig_priority : null,
             sig_gid     : signature ? signature.sig_gid : null,
-            sig_name    : signature ? signature.sigName : null,
+            sig_name    : signature ? signature.sig_name : null,
             sig_rev     : signature ? signature.sig_rev : null,
             ip_src      : iphdr ? iphdr.ip_src : null,
             ip_dst      : iphdr ? iphdr.ip_dst : null,

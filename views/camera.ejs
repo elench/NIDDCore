@@ -1,0 +1,39 @@
+<% include header %>
+
+<% if (connected) { %>
+<h4 id="camUri"><%= uri %></h4>
+
+<div class="row">
+  <div class="col-sm-2">
+  </div>
+
+  <div class="col-sm-8 text-center">
+    <object
+      classid="clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921"
+      codebase="http://download.videolan.org/pub/videolan/vlc/last/win32/axvlc.cab"
+      id="vlc"
+      class="vlcPlayer"
+      events="True">
+        <embed id="vlcEmb" type="application/x-google-vlc-plugin" version="VideoLAN.VLCPlugin.2"
+          autoplay="yes" loop="no" width="640" height="480" target="<%= uri %>">
+        </embed>
+    </object>
+  </div>
+
+  <div class="col-sm-2">
+  </div>
+</div>
+
+<form method="post">
+  <button id="up" value="up" name="upBtn">Up</button>
+  <button id="down" value="down" name="downBtn">Down</button>
+  <button id="left" value="left" name="leftBtn">Left</button>
+  <button id="right" value="right" name="rightBtn">Right</button>
+</form>
+
+<script defer src="/js/moveCamera.js"></script>
+<% } else { %>
+<p>Error connecting to camera!</p>
+<% } %>
+
+<% include footer %>
