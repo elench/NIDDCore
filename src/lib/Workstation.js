@@ -1,7 +1,7 @@
 const { NIDDCamera } = require('./NIDDCamera');
 
 class Workstation {
-    constructor(user, ip, camera, pCoord, tCoord, zCoord, preset) {
+    constructor(user, ip, camera, pCoord, tCoord, zCoord, preset, uri) {
         this.user = user;
         this.ip = ip;
         this.camera = camera;
@@ -9,6 +9,7 @@ class Workstation {
         this.tCoord = tCoord;
         this.zCoord = zCoord;
         this.preset = preset;
+        this._uri = uri;
     }
 
     connectCameraPromise() {
@@ -25,8 +26,12 @@ class Workstation {
         return niddCam.goto_preset(this.preset);
     }
 
-    getSnapshot(niddCam) {
-        return niddCam.get_snapshot();
+    get snapshotUri(niddCam) {
+        return this._uri;
+    }
+
+    set snapshotUri(uri) {
+        this._uri = uri;
     }
 }
 

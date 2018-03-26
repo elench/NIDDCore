@@ -14,6 +14,8 @@ const knex = require('knex')({
     }
 });
 
+const BAD_REQUEST = 400;
+
 process.on('message', event => {
 
     console.log('|------- processor: received event from main ------|');
@@ -27,7 +29,8 @@ process.on('message', event => {
         event.srcStation.pCoord,
         event.srcStation.tCoord,
         event.srcStation.zCoord,
-        event.srcStation.preset
+        event.srcStation.preset,
+        event.srcStation.snapshotUri
     );
     const dstStation = new Workstation(
         event.dstStation.user,
@@ -36,7 +39,8 @@ process.on('message', event => {
         event.dstStation.pCoord,
         event.dstStation.tCoord,
         event.dstStation.zCoord,
-        event.dstStation.preset
+        event.dstStation.preset,
+        event.dstStation.snapshotUri
     );
 
     const snortAlert = event.snortAlert;
@@ -113,15 +117,18 @@ function performActionSequence(station) {
         msg = await station.gotoLocation(niddCam);
         console.log(`-% ${msg}`);
 
-        //console.log('-% calling station.getSnapshot()');
-        //msg = await station.getSnapshot(niddCam);
-        //console.log(`-% ${msg}`);
-
-        const uri =
-        `http://${niddCam.hostname}/onvifsnapshot/media_service/snapshot?channel=1&subtype=0`;
-
+        console.log('-% calling station.getSnapshot()');
+        const uri = station.snapshotUri();
         console.log('uri:', uri);
-        msg = await storeSnapshot(uri, niddCam, station.ip);
+
+        // wait for 2.5 seconds after moving camera and before
+        // taking picture to avoid blury pictures
+        msg = await delay(2500);
+        console.log(`delay: ${msg}`;)
+        do {
+            let { media, statusCode } = await storeSnapshot(uri, niddCam, station.ip);
+        }
+        while(statusCode === BAD_REQUEST);
 
         return msg;
     })
@@ -132,26 +139,23 @@ function performActionSequence(station) {
 
 function storeSnapshot(uri, niddCam, ip) {
     return new Promise((resolve, reject) => {
+        const timestamp = new Date();
+        const path = process.cwd() + '/../public/snapshots/'
+            + ip + '_'
+            + timestamp.toLocaleDateString()
+            + '_'
+            + timestamp.toLocaleTimeString().split(':').join('-')
+            + '.jpg';
+        const myMedia = new Media(path, timestamp);
 
-        setTimeout(() => {
-            const timestamp = new Date();
-            const path = process.cwd() + '/../public/snapshots/'
-                + ip + '_'
-                + timestamp.toLocaleDateString()
-                + '_'
-                + timestamp.toLocaleTimeString().split(':').join('-')
-                + '.jpg';
-            const myMedia = new Media(path, timestamp);
-
-            req.get(uri, { timeout: 30000 })
-            .on('response', res => {
-                console.log(`${niddCam.hostname} - ${res.statusCode}`);
-            })
-            .auth(niddCam.username, niddCam.password, false)
-            .pipe(fs.createWriteStream(path).on('finish', () => {
-                resolve(myMedia);
-            }));
-        }, 2500);
+        req.get(uri, { timeout: 30000 })
+        .on('response', res => {
+            console.log(`${niddCam.hostname} - ${res.statusCode}`);
+        })
+        .auth(niddCam.username, niddCam.password, false)
+        .pipe(fs.createWriteStream(path).on('finish', () => {
+            resolve(myMedia);
+        }));
     });
 }
 
@@ -197,5 +201,13 @@ function writeReport(snortAlert, srcStation, dstStation, srcMedia, dstMedia) {
         dst_email: dstStation.user.emailAddress,
         dst_media_path: dstMedia.path,
         dst_media_timestamp: dstMedia.timestamp
+    });
+}
+
+function delay(ms) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(`Waiting ${ms} ms....`);
+        }, ms);
     });
 }

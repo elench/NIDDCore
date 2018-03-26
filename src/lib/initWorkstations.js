@@ -2,6 +2,7 @@ const { Workstation } = require('./Workstation');
 const { PCUser } = require('./PCUser');
 const { Camera } = require('./Camera');
 const { decToIp } = require('./ip-decimal');
+const { NIDDCamera } = require('./NIDDCamera');
 
 const knex = require('knex')({
     client: 'mysql',
@@ -46,6 +47,15 @@ function initWorkstations() {
                 )
             }
 
+            const cam = await new NIDDCamera({
+                hostname: cameras[hostname].hostname,
+                username: cameras[hostname].username,
+                password: cameras[hostname].password,
+                port: cameras[hostname].port
+            });
+
+            const uri = await cam.get_snapshot_uri();
+
             workstations[station.ip] = new Workstation(
                 pcuser,
                 station.ip,
@@ -53,7 +63,8 @@ function initWorkstations() {
                 station.p_coordinate,
                 station.t_coordinate,
                 station.z_coordinate,
-                station.preset
+                station.preset,
+                uri
             )
         }
 
@@ -75,7 +86,7 @@ function initWorkstations() {
                 '',
                 ''
             )
-            , 0, 0, 0, 0
+            , 0, 0, 0, 0, ''
         );
 
         return workstations;
