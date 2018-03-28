@@ -77,6 +77,36 @@ passport.authenticate('local', { failureRedirect: '/login' }),
     res.redirect('/index');
 });
 
+app.get('/editUser',
+ensureLoggedIn(),
+(req, res) => {
+    res.render('editUser', {
+        title: 'Edit User Information',
+        msg: ''
+    });
+});
+
+app.post('/editUser',
+ensureLoggedIn(),
+async (req, res) => {
+    const username = app.locals.user.username;
+    const password = req.body.newPass;
+    let msg = await users.changePassword(username, password);
+
+    if (msg === 1) {
+        res.render('editUser', {
+            title: 'Edit User Information',
+            msg: 'Password Change Successful!'
+        });
+    }
+    else {
+        res.render('editUser', {
+            title: 'Edit User Information',
+            msg: 'Error! Password NOT changed.'
+        });
+    }
+});
+
 app.get('/index',
 ensureLoggedIn(),
 async (req, res) => {

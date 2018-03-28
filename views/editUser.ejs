@@ -1,0 +1,41 @@
+<% include header %>
+
+<form class="form-horizontal" method="post" action="/editUser" id="passForm">
+
+  <div class="form-group">
+    <label for="newPass"
+      class="col-sm-offset-2 col-sm-3 control-label">New Password*:</label>
+
+    <div class="col-sm-4">
+      <input type="password" class="form-control" name="newPass"
+        id="newPass" placeholder="Enter New Password" required>
+    </div>
+
+  </div>
+
+  <div class="form-group">
+    <label for="newPassConfirm"
+      class="col-sm-offset-2 col-sm-3 control-label">Confirm New Password*:</label>
+    <div class="col-sm-4">
+      <input type="password" class="form-control" name="newPassConfirm"
+        id="newPassConfirm" placeholder="Confirm New Password" required>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-offset-5 col-sm-7">
+      <button id="change-pass-btn"
+        type="submit" class="btn btn-primary">Change Password</button>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-offset-5 col-sm-7">
+      <p id="errMsg" class="help-block"><%= msg %></p>
+    </div>
+  </div>
+
+</form>
+
+<script src="/js/verifyPassword.js"></script>
+<% include footer %>
