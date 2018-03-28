@@ -165,16 +165,16 @@
       <div class="row">
         <div class="col-sm-6">
           <div class="thumbnail">
-            <a href="/snapshots/2018-3-15_15-18-53.jpg">
-              <img src="/snapshots/2018-3-15_15-18-53.jpg">
+            <a href=<%= `/snapshots/${r.src_media_path}` %>>
+              <img src=<%= `/snapshots/${r.src_media_path}` %>>
             </a>
           </div>
         </div>
 
         <div class="col-sm-6">
           <div class="thumbnail">
-            <a href="/snapshots/2018-3-15_15-18-58.jpg">
-              <img src="/snapshots/2018-3-15_15-18-58.jpg">
+            <a href=<%= `/snapshots/${r.dst_media_path}` %>>
+              <img src=<%= `/snapshots/${r.dst_media_path}` %>>
             </a>
           </div>
         </div>
@@ -184,28 +184,37 @@
   </div>
 
   <div class="panel panel-primary">
-    <div class="row">
-      <div class="col-sm-6">
-        <h4 class="panel-title">Source User</h4>
-        <p>User ID: <%= %></p>
-        <p>Name: <%= `${r.src_user_first_name} ${r.src_user_last_name}` %></p>
-        <p>Job Title: <%= r.src_job_title %></p>
-        <p>Office Location: <%= `${r.src_office_building} ${r.src_office_room}` %></p>
-        <p>Phone: <%= r.src_phone %></p>
-        <p>Email: <%= r.src_email %></p>
+    <div class="panel-heading">
+      <div class="row">
+        <div class="col-sm-6">
+          <h4 class="panel-title">Source User</h4>
+        </div>
+        <div class="col-sm-6">
+          <h4 class="panel-title">Destination User</h4>
+        </div>
       </div>
-      <div class="col-sm-6">
-        <h4 class="panel-title">Destination User</h4>
-        <p>User ID: <%= %></p>
-        <p>Name: <%= `${r.dst_user_first_name} ${r.src_user_last_name}` %></p>
-        <p>Job Title: <%= r.dst_job_title %></p>
-        <p>Office Location: <%= `${r.dst_office_building} ${r.src_office_room}` %></p>
-        <p>Phone: <%= r.dst_phone%></p>
-        <p>Email: <%= r.dst_email%></p>
+    </div>
+
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-sm-6">
+          <p>User ID: <%= %></p>
+          <p>Name: <%= `${r.src_user_first_name} ${r.src_user_last_name}` %></p>
+          <p>Job Title: <%= r.src_job_title %></p>
+          <p>Office Location: <%= `${r.src_office_building} ${r.src_office_room}` %></p>
+          <p>Phone: <%= r.src_phone %></p>
+          <p>Email: <%= r.src_email %></p>
+        </div>
+        <div class="col-sm-6">
+          <p>User ID: <%= %></p>
+          <p>Name: <%= `${r.dst_user_first_name} ${r.src_user_last_name}` %></p>
+          <p>Job Title: <%= r.dst_job_title %></p>
+          <p>Office Location: <%= `${r.dst_office_building} ${r.src_office_room}` %></p>
+          <p>Phone: <%= r.dst_phone%></p>
+          <p>Email: <%= r.dst_email%></p>
+        </div>
       </div>
     </div>
   </div>
-
-</div>
 
 <% include footer %>
