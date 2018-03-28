@@ -5,13 +5,14 @@ const { Workstation } = require('./lib/Workstation');
 const { Media } = require('./lib/Media');
 const { decToIp } = require('./lib/ip-decimal');
 
+require('donenv').config();
 const knex = require('knex')({
     client: 'mysql',
     connection: {
-        host: '127.0.0.1',
-        user: 'niddadmin',
-        password: 'nidd2018',
-        database: 'niddtestdb'
+        host: process.env.NIDD_DB_HOSTNAME,
+        user: process.env.NIDD_DB_ADMIN_USER,
+        password: process.env.NIDD_DB_USERS_PASSWORD,
+        database: process.env.NIDD_DB_NAME
     }
 });
 

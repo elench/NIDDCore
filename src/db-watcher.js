@@ -1,18 +1,19 @@
 const mysql = require('mysql-events');
 
 const eventWatcher = mysql({
-    host: 'localhost',
-    user: 'root',
-    password: 's3cr3t'
+    host: process.env.NIDD_DB_HOSTNAME,
+    user: process.env.MYSQL_ROOT_USER,
+    password: process.env.MYSQL_ROOT_PASSWORD
 });
 
+require('dotenv').config();
 const knex = require('knex')({
     client: 'mysql',
     connection: {
-        host: '127.0.0.1',
-        user: 'dbwatcher',
-        password: 'nidd2018',
-        database: 'niddtestdb'
+        host: process.env.NIDD_DB_HOSTNAME,
+        user: process.env.NIDD_DB_WATCHER_USER,
+        password: process.env.NIDD_DB_USERS_PASSWORD,
+        database: process.env.NIDD_DB_NAME
     }
 });
 
