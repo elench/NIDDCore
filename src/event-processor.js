@@ -140,8 +140,7 @@ function performActionSequence(station) {
 function storeSnapshot(uri, niddCam, ip) {
     return new Promise((resolve, reject) => {
         const timestamp = new Date();
-        const path = process.cwd() + '/../public/snapshots/'
-            + ip + '_'
+        const path = ip + '_'
             + timestamp.toLocaleDateString()
             + '_'
             + timestamp.toLocaleTimeString().split(':').join('-')

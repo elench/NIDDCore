@@ -83,6 +83,43 @@ passport.authenticate('local', { failureRedirect: '/login' }),
     res.redirect('/index');
 });
 
+app.get('/index',
+ensureLoggedIn(),
+async (req, res) => {
+    console.log(req.query);
+    res.locals.title = 'Events';
+    res.render('index');
+});
+
+app.get('/index/table',
+ensureLoggedIn(),
+async (req, res) => {
+    const recordsTotal = await niddReport.getCount();
+    console.log(recordsTotal);
+
+    const limit = parseInt(req.query.length);
+    const offset = parseInt(req.query.start);
+
+    console.log(limit);
+    console.log(offset);
+
+    const reports = await niddReport.getNiddReport(limit, offset);
+    console.log(reports);
+
+    for (report of reports) {
+        report.timestamp = `${report.timestamp.toLocaleDateString()} ${report.timestamp.toLocaleTimeString()}`;
+    }
+
+    if (reports !== undefined) {
+        res.send(JSON.stringify({
+            'draw': parseInt(req.query.draw),
+            'recordsFiltered': recordsTotal,
+            'recordsTotal': recordsTotal,
+            'data': reports
+        }));
+    }
+});
+
 app.get('/editUser',
 ensureLoggedIn(),
 (req, res) => {
@@ -126,23 +163,11 @@ ensureLoggedIn(),
 
 });
 
-app.get('/index',
-ensureLoggedIn(),
-async (req, res) => {
-    await niddReport.loadNiddReport()
-    const reports = niddReport.getNiddReport();
-
-    res.render('index', {
-        title: 'Events',
-        reports: reports
-    });
-});
-
 app.get('/report/:reportId',
 ensureLoggedIn(),
-(req, res, next) => {
+async (req, res, next) => {
     console.log(req.params.reportId);
-    let rep = niddReport.getReportById(req.params.reportId);
+    let rep = await niddReport.getReportById(req.params.reportId);
     console.log('rep:', rep);
     if (rep) {
         res.render('report', {

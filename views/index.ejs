@@ -1,26 +1,20 @@
 <% include header %>
 
-<table class="table table-striped">
-  <tr>
-    <th>Report ID</th>
-    <th>CID</th>
-    <th>Timestamp</th>
-    <th>Signature</th>
-    <th>Event Flag</th>
-  </tr>
-<% reports.forEach(function(report) { %>
-  <tr>
-    <td>
-      <a href=<%= `/report/${report.nidd_report_id}` %> class="reportIdLink">
-        <%= report.nidd_report_id %>
-      </a>
-    </td>
-    <td><%= report.cid %></td>
-    <td><%= `${report.timestamp.toLocaleDateString()} ${report.timestamp.toLocaleTimeString()}` %></td>
-    <td><%= report.signature %></td>
-    <td><%= report.sig_name %></td>
-  </tr>
-<% }) %>
+<link rel="stylesheet" type="text/css" href="/DataTables/datatables.min.css">
+
+<table id="eventTable" class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>Report ID</th>
+      <th>Source IP</th>
+      <th>Destination IP</th>
+      <th>Event Signature</th>
+      <th>Timestamp</th>
+    </tr>
+  </thead>
 </table>
+
+<script defer type="text/javascript" src="/DataTables/datatables.min.js"></script>
+<script defer type="text/javascript" src="/js/paginate.js"></script>
 
 <% include footer %>
