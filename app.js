@@ -5,6 +5,7 @@ const path = require('path');
 const passport = require('passport');
 const Strategy = require('passport-local').Strategy;
 const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
+const bcrypt = require('bcrypt');
 const users = require('./db/users');
 const niddReport = require('./db/nidd-report');
 
@@ -18,11 +19,16 @@ passport.use(new Strategy((username, password, done) => {
             return done(null, false);
         }
 
-        if (user.password != password) {
-            return done(null, false);
-        }
+        bcrypt.compare(password, user.password, (err, res) => {
+            if (err) return done(err);
 
-        return done(null, user);
+            if (res === false) {
+                return done(null, false);
+            }
+            else {
+                return done(null, user);
+            }
+        });
     });
 }));
 
@@ -88,23 +94,36 @@ ensureLoggedIn(),
 
 app.post('/editUser',
 ensureLoggedIn(),
-async (req, res) => {
+(req, res) => {
     const username = app.locals.user.username;
     const password = req.body.newPass;
-    let msg = await users.changePassword(username, password);
+    let result;
 
-    if (msg === 1) {
-        res.render('editUser', {
-            title: 'Edit User Information',
-            msg: 'Password Change Successful!'
+    bcrypt.genSalt(10, (err, salt) => {
+        if (err) return next(err);
+
+        bcrypt.hash(password, salt, async (err, hash) => {
+            if (err) return next(err);
+            result = await users.changePassword(username, hash);
+
+            console.log(result);
+
+            if (result === 1) {
+                res.render('editUser', {
+                    title: 'Edit User Information',
+                    msg: 'Password Change Successful!'
+                });
+            }
+            else {
+                res.render('editUser', {
+                    title: 'Edit User Information',
+                    msg: 'Error! Password NOT changed.'
+                });
+            }
+
         });
-    }
-    else {
-        res.render('editUser', {
-            title: 'Edit User Information',
-            msg: 'Error! Password NOT changed.'
-        });
-    }
+    });
+
 });
 
 app.get('/index',
