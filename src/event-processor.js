@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const req = require('request');
 const { Workstation } = require('./lib/Workstation');
 const { Media } = require('./lib/Media');
@@ -140,12 +141,16 @@ function performActionSequence(station) {
 function storeSnapshot(uri, niddCam, ip) {
     return new Promise((resolve, reject) => {
         const timestamp = new Date();
-        const path = ip + '_'
+        const imgName = ip + '_'
             + timestamp.toLocaleDateString()
             + '_'
             + timestamp.toLocaleTimeString().split(':').join('-')
             + '.jpg';
-        const myMedia = new Media(path, timestamp);
+        const myMedia = new Media(imgName, timestamp);
+
+        let path = path.parse(__dirname).dir;
+        path = `${path}/public/snapshots/${imgName}`;
+
 
         req.get(uri, { timeout: 30000 })
         .on('response', res => {
