@@ -3,7 +3,7 @@ const knex = require('knex')({
     client: 'mysql',
     connection: {
         host: process.env.NIDD_DB_HOSTNAME,
-        user: process.env.NIDD_DB_WATCHER_USER,
+        user: process.env.NIDD_DB_ADMIN_USER,
         password: process.env.NIDD_DB_USERS_PASSWORD,
         database: process.env.NIDD_DB_NAME
     }
@@ -65,7 +65,6 @@ process.on('message', event => {
                     srcMedia, dstMedia);
                 console.log('-% report has been saved:', report);
 
-                process.send(0);
                 process.exit(0);
             }
             catch (err) {
@@ -90,7 +89,6 @@ process.on('message', event => {
                 srcMedia, dstMedia);
             console.log('-% report has been saved:', report);
 
-            process.send(0);
             process.exit(0);
         })
         .catch(err => {
@@ -102,6 +100,7 @@ process.on('message', event => {
 });
 
 process.on('exit', code => {
+    process.send(code);
     console.log(`%%write-file exited: ${code}%%`);
     console.log();
 });

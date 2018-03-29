@@ -62,6 +62,7 @@ function processEvent(event) {
     processor.send(event);
 
     processor.on('message', ready => {
+        console.log('-> received exit message from event-processor:', ready);
         setStationsReady(event.srcStation, event.dstStation, true);
     });
 }

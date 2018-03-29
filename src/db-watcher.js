@@ -45,6 +45,7 @@ eventWatcher.add('niddtestdb.event',
                     prevAlert.ip_dst = snortAlert.ip_dst;
                     prevAlert.signature = snortAlert.signature;
                     process.send(snortAlert);
+                    //console.log(snortAlert);
                     setTimeout(() => {
                         prevAlert = {};
                     }, 2000);
