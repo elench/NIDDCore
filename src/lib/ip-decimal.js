@@ -15,6 +15,10 @@ function ipToDec(ip) {
 }
 
 function decToIp(dec) {
+    if (typeof dec === 'string') {
+        dec = Number(dec);
+    }
+
     if (!isValidIpDecimal(dec)) {
         throw Error('not valid ip address decimal format');
     }

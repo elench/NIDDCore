@@ -4,7 +4,8 @@
    "description": "",
    "main": "main.js",
    "scripts": {
-      "start": "node app.js"
+      "viewer": "node app.js",
+      "core": "node ./src/main"
    },
    "keywords": [],
    "author": "",

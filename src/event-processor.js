@@ -1,3 +1,4 @@
+require('dotenv').config({ path: require('path').resolve(process.cwd(), '.env') });
 const fs = require('fs');
 const path = require('path');
 const req = require('request');
@@ -5,12 +6,11 @@ const { Workstation } = require('./lib/Workstation');
 const { Media } = require('./lib/Media');
 const { decToIp } = require('./lib/ip-decimal');
 
-require('donenv').config();
 const knex = require('knex')({
     client: 'mysql',
     connection: {
         host: process.env.NIDD_DB_HOSTNAME,
-        user: process.env.NIDD_DB_ADMIN_USER,
+        user: process.env.NIDD_DB_WATCHER_USER,
         password: process.env.NIDD_DB_USERS_PASSWORD,
         database: process.env.NIDD_DB_NAME
     }
@@ -32,7 +32,7 @@ process.on('message', event => {
         event.srcStation.tCoord,
         event.srcStation.zCoord,
         event.srcStation.preset,
-        event.srcStation.snapshotUri
+        event.srcStation.uri
     );
     const dstStation = new Workstation(
         event.dstStation.user,
@@ -42,7 +42,7 @@ process.on('message', event => {
         event.dstStation.tCoord,
         event.dstStation.zCoord,
         event.dstStation.preset,
-        event.dstStation.snapshotUri
+        event.dstStation.uri
     );
 
     const snortAlert = event.snortAlert;
@@ -51,26 +51,28 @@ process.on('message', event => {
     let dstMedia = null;
 
     if (srcStation.camera.hostname === dstStation.camera.hostname) {
-        performActionSequence(srcStation)
-        .then(async media => {
-            srcMedia = media;
-            console.log('-% srcMedia = ', srcMedia);
+        ( async () => {
+            try {
+                let media = await performActionSequence(srcStation);
+                srcMedia = media;
+                console.log('-% srcMedia = ', srcMedia);
 
-            media = await performActionSequence(dstStation);
-            dstMedia = media;
-            console.log('-% dstMedia = ', dstMedia);
+                media = await performActionSequence(dstStation);
+                dstMedia = media;
+                console.log('-% dstMedia = ', dstMedia);
 
-            report = await writeReport(snortAlert, srcStation, dstStation,
-                srcMedia, dstMedia);
-            console.log('-% report has been saved:', report);
+                report = await writeReport(snortAlert, srcStation, dstStation,
+                    srcMedia, dstMedia);
+                console.log('-% report has been saved:', report);
 
-            process.send(0);
-            process.exit(0);
-        })
-        .catch(err => {
-            console.log(err);
-            process.exit(1);
-        });
+                process.send(0);
+                process.exit(0);
+            }
+            catch (err) {
+                console.log(err);
+                process.exit(1);
+            }
+        })();
     }
     else {
         Promise.all([
@@ -82,7 +84,7 @@ process.on('message', event => {
             srcMedia = values[0];
             dstMedia = values[1];
             console.log('-% srcMedia = ', srcMedia);
-            console.log('-% srcMedia = ', dstMedia);
+            console.log('-% dstMedia = ', dstMedia);
 
             report = await writeReport(snortAlert, srcStation, dstStation,
                 srcMedia, dstMedia);
@@ -119,20 +121,22 @@ function performActionSequence(station) {
         msg = await station.gotoLocation(niddCam);
         console.log(`-% ${msg}`);
 
-        console.log('-% calling station.getSnapshot()');
-        const uri = station.snapshotUri();
+        console.log('-% getting station.uri');
+        const uri = station.uri;
         console.log('uri:', uri);
 
         // wait for 2.5 seconds after moving camera and before
         // taking picture to avoid blury pictures
         msg = await delay(2500);
-        console.log(`delay: ${msg}`;)
+        console.log(`delay: ${msg}`);
+
+        let myMedia, statusCode;
         do {
-            let { media, statusCode } = await storeSnapshot(uri, niddCam, station.ip);
+            ( { myMedia, statusCode } = await storeSnapshot(uri, niddCam, station.ip) );
         }
         while(statusCode === BAD_REQUEST);
 
-        return msg;
+        return myMedia;
     })
     .catch(err => {
         throw Error(err);
@@ -147,19 +151,20 @@ function storeSnapshot(uri, niddCam, ip) {
             + '_'
             + timestamp.toLocaleTimeString().split(':').join('-')
             + '.jpg';
+
         const myMedia = new Media(imgName, timestamp);
 
-        let path = path.parse(__dirname).dir;
-        path = `${path}/public/snapshots/${imgName}`;
-
+        let savePath = path.resolve('public', 'snapshots', imgName)
+        let statusCode;
 
         req.get(uri, { timeout: 30000 })
         .on('response', res => {
             console.log(`${niddCam.hostname} - ${res.statusCode}`);
+            statusCode = res.statusCode;
         })
         .auth(niddCam.username, niddCam.password, false)
-        .pipe(fs.createWriteStream(path).on('finish', () => {
-            resolve(myMedia);
+        .pipe(fs.createWriteStream(savePath).on('finish', () => {
+            resolve({ myMedia, statusCode });
         }));
     });
 }
@@ -173,13 +178,14 @@ function writeReport(snortAlert, srcStation, dstStation, srcMedia, dstMedia) {
         hostname: snortAlert.hostname,
         interface: snortAlert.interface,
         signature: snortAlert.signature,
-        timestamp: snortAlert.timestamp,
+        timestamp: new Date(snortAlert.timestamp)
+            .toISOString().slice(0,19).replace('T', ' '),
         sig_priority: snortAlert.sig_priority,
         sig_gid: snortAlert.sig_gid,
         sig_name: snortAlert.sig_name,
         sig_rev: snortAlert.sig_rev,
-        ip_src: snortAlert.ip_src,
-        ip_dst: snortAlert.ip_dst,
+        ip_src: srcStation.ip,
+        ip_dst: dstStation.ip,
         ip_ver: snortAlert.ip_ver,
         ip_proto: snortAlert.ip_proto,
         tcp_sport: snortAlert.tcp_sport,
@@ -196,7 +202,8 @@ function writeReport(snortAlert, srcStation, dstStation, srcMedia, dstMedia) {
         src_phone: srcStation.user.phoneNumber,
         src_email: srcStation.user.emailAddress,
         src_media_path: srcMedia.path,
-        src_media_timestamp: srcMedia.timestamp,
+        src_media_timestamp: srcMedia.timestamp
+            .toISOString().slice(0,19).replace('T', ' '),
         dst_user_first_name: dstStation.user.firstName,
         dst_user_last_name: dstStation.user.lastName,
         dst_job_title: dstStation.user.jobTitle,
@@ -206,6 +213,7 @@ function writeReport(snortAlert, srcStation, dstStation, srcMedia, dstMedia) {
         dst_email: dstStation.user.emailAddress,
         dst_media_path: dstMedia.path,
         dst_media_timestamp: dstMedia.timestamp
+            .toISOString().slice(0,19).replace('T', ' ')
     });
 }
 

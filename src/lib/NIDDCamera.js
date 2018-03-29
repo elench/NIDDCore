@@ -74,7 +74,7 @@ class NIDDCamera {
             err => {
                 if (err) reject(err);
 
-                resolve(`Movint to preset ${number}`);
+                resolve(`Moving to preset ${number}`);
             });
         });
     }

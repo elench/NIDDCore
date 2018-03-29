@@ -9,7 +9,7 @@ class Workstation {
         this.tCoord = tCoord;
         this.zCoord = zCoord;
         this.preset = preset;
-        this._uri = uri;
+        this.uri = uri;
     }
 
     connectCameraPromise() {
@@ -24,14 +24,6 @@ class Workstation {
 
     gotoLocation(niddCam) {
         return niddCam.goto_preset(this.preset);
-    }
-
-    get snapshotUri(niddCam) {
-        return this._uri;
-    }
-
-    set snapshotUri(uri) {
-        this._uri = uri;
     }
 }
 
