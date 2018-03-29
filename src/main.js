@@ -28,8 +28,6 @@ watcher.on('message', snortAlert => {
                     stations['void']
     };
 
-    console.log(event);
-
     if (event.srcStation.user.userId === '' &&
         event.dstStation.user.userId === '') {
         console.log('-> event discarded');
