@@ -1,10 +1,19 @@
+require('dotenv').config({ path: require('path').resolve(process.cwd(), '.env') });
+const knex = require('knex')({
+    client: 'mysql',
+    connection: {
+        host: process.env.NIDD_DB_HOSTNAME,
+        user: process.env.NIDD_DB_WATCHER_USER,
+        password: process.env.NIDD_DB_USERS_PASSWORD,
+        database: process.env.NIDD_DB_NAME
+    }
+});
+
 const { Workstation } = require('./Workstation');
 const { PCUser } = require('./PCUser');
 const { Camera } = require('./Camera');
 const { decToIp } = require('./ip-decimal');
 const { NIDDCamera } = require('./NIDDCamera');
-
-const knex = require('./connection').knex;
 
 function initWorkstations() {
     return knex('workstation as w')

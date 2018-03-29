@@ -1,12 +1,4 @@
 require('dotenv').config({ path: require('path').resolve(process.cwd(), '.env') });
-const mysql = require('mysql-events');
-
-const eventWatcher = mysql({
-    host: process.env.NIDD_DB_HOSTNAME,
-    user: process.env.MYSQL_ROOT_USER,
-    password: process.env.MYSQL_ROOT_PASSWORD
-});
-
 const knex = require('knex')({
     client: 'mysql',
     connection: {
@@ -16,6 +8,15 @@ const knex = require('knex')({
         database: process.env.NIDD_DB_NAME
     }
 });
+
+const mysql = require('mysql-events');
+
+const eventWatcher = mysql({
+    host: process.env.NIDD_DB_HOSTNAME,
+    user: process.env.MYSQL_ROOT_USER,
+    password: process.env.MYSQL_ROOT_PASSWORD
+});
+
 
 let prevAlert = {};
 
