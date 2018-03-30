@@ -22,7 +22,7 @@
       "keypress": "^0.2.1",
       "knex": "^0.14.4",
       "morgan": "^1.9.0",
-      "mysql": "^2.14.1",
+      "mysql": "^2.15.0",
       "mysql-events": "0.0.11",
       "npm-check": "^5.6.0",
       "onvif": "^0.5.4",
