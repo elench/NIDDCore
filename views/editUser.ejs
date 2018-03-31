@@ -1,6 +1,27 @@
 <% include header %>
 
-<form class="form-horizontal" method="post" action="/editUser" id="passForm">
+<form class="form-horizontal" method="post" action="/editUsername" id="userForm">
+
+  <div class="form-group">
+    <label for="newUser"
+      class="col-sm-offset-2 col-sm-3 control-label">New Username*:</label>
+
+    <div class="col-sm-4">
+      <input type="text" class="form-control" name="newUser"
+        id="newUser" placeholder="Enter a new Username" required>
+    </div>
+
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-offset-5 col-sm-7">
+      <button id="change-user-btn"
+        type="submit" class="btn btn-primary">Change Username</button>
+    </div>
+  </div>
+</form>
+
+<form class="form-horizontal" method="post" action="/editPassword" id="passForm">
 
   <div class="form-group">
     <label for="newPass"
@@ -31,7 +52,7 @@
 
   <div class="form-group">
     <div class="col-sm-offset-5 col-sm-7">
-      <p id="errMsg" class="help-block"><%= msg %></p>
+      <p id="passMsg" class="help-block"><%= msg %></p>
     </div>
   </div>
 

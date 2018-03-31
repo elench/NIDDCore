@@ -26,7 +26,7 @@ process.on('message', event => {
 
     const srcStation = new Workstation(
         event.srcStation.user,
-        decToIp(event.srcStation.ip),
+        decToIp(event.snortAlert.ip_src),
         event.srcStation.camera,
         event.srcStation.pCoord,
         event.srcStation.tCoord,
@@ -36,7 +36,7 @@ process.on('message', event => {
     );
     const dstStation = new Workstation(
         event.dstStation.user,
-        decToIp(event.dstStation.ip),
+        decToIp(event.snortAlert.ip_dst),
         event.dstStation.camera,
         event.dstStation.pCoord,
         event.dstStation.tCoord,
@@ -108,7 +108,7 @@ process.on('exit', code => {
 function performActionSequence(station) {
     if (station.user.firstName === '') {
         return new Promise((resolve, reject) => {
-            resolve(new Media('', new Date()));
+            resolve(new Media('void.jpg', new Date()));
         });
     }
 
