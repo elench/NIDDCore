@@ -11,10 +11,10 @@
           <p>Report ID: <%= r.nidd_report_id %></p>
         </div>
         <div class="col-sm-3">
-          <p>Accessed by: <%= %></p>
+          <p>Accessed by: <%= fullName %></p>
         </div>
         <div class="col-sm-3">
-          <p>Created on: <%= %></p>
+          <p>Accessed on: <%= new Date().toISOString().slice(0, 19).replace('T', ' ') %></p>
         </div>
       </div>
     </div>
@@ -31,7 +31,7 @@
           <p>Sensor ID: <%= r.sid %></p>
         </div>
         <div class="col-sm-3">
-          <p>Sensor: <%= %></p>
+          <p>Sensor: <%= r.hostname %></p>
         </div>
         <div class="col-sm-3">
           <p>Interface: <%= r.interface %></p>
@@ -43,16 +43,13 @@
 
       <div class="row">
         <div class="col-sm-3">
-          <p>Timestamp: <%= r.timestamp %></p>
+          <p>Timestamp: <%= r.timestamp.toISOString().slice(0, 19).replace('T', ' ') %></p>
         </div>
         <div class="col-sm-3">
           <p>Generator ID: <%= r.sig_gid %></p>
         </div>
         <div class="col-sm-3">
-          <p>Signature ID: <%= r.sig_id %></p>
-        </div>
-        <div class="col-sm-3">
-          <p>Signature: <%= r.signature %></p>
+          <p>Signature ID: <%= r.signature %></p>
         </div>
       </div>
 
@@ -93,60 +90,63 @@
     </div>
 
   </div>
+  <% if (typeof r.tcp_sport === 'number') { %>
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h4 class="panel-title">TCP Header</h4>
+      </div>
 
-  <div class="panel panel-primary">
-    <div class="panel-heading">
-      <h4 class="panel-title">TCP Header</h4>
-    </div>
-
-    <div class="panel-body">
-      <div class="row">
-        <div class="col-sm-6">
-          <p>Source Port: <%= r.tcp_sport %></p>
-        </div>
-        <div class="col-sm-6">
-          <p>Destination Port: <%= r.tcp_dport %></p>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-6">
+            <p>Source Port: <%= r.tcp_sport %></p>
+          </div>
+          <div class="col-sm-6">
+            <p>Destination Port: <%= r.tcp_dport %></p>
+          </div>
         </div>
       </div>
     </div>
 
-  </div>
+  <% } else if (typeof r.udp_sport === 'number') { %>
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h4 class="panel-title">UDP Header</h4>
+      </div>
 
-  <div class="panel panel-primary">
-    <div class="panel-heading">
-      <h4 class="panel-title">UDP Header</h4>
-    </div>
-
-    <div class="panel-body">
-      <div class="row">
-        <div class="col-sm-6">
-          <p>Source Port: <%= r.udp_sport %></p>
-        </div>
-        <div class="col-sm-6">
-          <p>Destination Port: <%= r.udp_dport %></p>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-6">
+            <p>Source Port: <%= r.udp_sport %></p>
+          </div>
+          <div class="col-sm-6">
+            <p>Destination Port: <%= r.udp_dport %></p>
+          </div>
         </div>
       </div>
     </div>
+  <% } else { %>
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h4 class="panel-title">ICMP Header</h4>
+      </div>
 
-  </div>
-
-  <div class="panel panel-primary">
-    <div class="panel-heading">
-      <h4 class="panel-title">ICMP Header</h4>
-    </div>
-
-    <div class="panel-body">
-      <div class="row">
-        <div class="col-sm-6">
-          <p>Type: <%= r.icmp_type %></p>
-        </div>
-        <div class="col-sm-6">
-          <p>Code: <%= r.icmp_code %></p>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-6">
+            <p>Type: <%= r.icmp_type %></p>
+          </div>
+          <div class="col-sm-6">
+            <p>Code: <%= r.icmp_code %></p>
+          </div>
         </div>
       </div>
-    </div>
 
-  </div>
+    </div>
+  <% } %>
+
+
+
 
   <div class="panel panel-primary">
 
@@ -198,7 +198,7 @@
     <div class="panel-body">
       <div class="row">
         <div class="col-sm-6">
-          <p>User ID: <%= %></p>
+          <p>User ID: <%= r.src_user_id %></p>
           <p>Name: <%= `${r.src_user_first_name} ${r.src_user_last_name}` %></p>
           <p>Job Title: <%= r.src_job_title %></p>
           <p>Office Location: <%= `${r.src_office_building} ${r.src_office_room}` %></p>
@@ -206,7 +206,7 @@
           <p>Email: <%= r.src_email %></p>
         </div>
         <div class="col-sm-6">
-          <p>User ID: <%= %></p>
+          <p>User ID: <%= r.dst_user_id %></p>
           <p>Name: <%= `${r.dst_user_first_name} ${r.dst_user_last_name}` %></p>
           <p>Job Title: <%= r.dst_job_title %></p>
           <p>Office Location: <%= `${r.dst_office_building} ${r.src_office_room}` %></p>

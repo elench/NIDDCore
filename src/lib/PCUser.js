@@ -1,18 +1,6 @@
 class PCUser {
-    /*
-    constructor(pcuserEntity) {
-        { this.userId } = userId;
-        { this.firstName } = firstName;
-        { this.lastName } = lastName;
-        { this.jobTitle } = jobTitle;
-        { this.officeRoom } = officeRoom;
-        { this.officeBuilding } = officeBuilding;
-        { this.phoneNumber } = phoneNumber;
-        { this.emailAddres } = emailAddres;
-    }
-    */
     constructor(/*pcUserId,*/ userId, firstName, lastName,
-        jobTitle, officeRoom, officeBuilding, phoneNumber, emailAddres) {
+        jobTitle, officeRoom, officeBuilding, phoneNumber, emailAddress) {
         //this.pcUserId = pcUserId;
         this.userId = userId;
         this.firstName = firstName;
@@ -21,7 +9,7 @@ class PCUser {
         this.officeRoom = officeRoom;
         this.officeBuilding = officeBuilding;
         this.phoneNumber = phoneNumber;
-        this.emailAddres = emailAddres;
+        this.emailAddress = emailAddress;
     }
 
     /*
@@ -54,7 +42,7 @@ class PCUser {
     }
 
     get emailAddres() {
-        return this.emailAddres;
+        return this.emailAddress;
     }
     */
 }

@@ -212,7 +212,9 @@ function writeReport(snortAlert, srcStation, dstStation, srcMedia, dstMedia) {
         dst_email: dstStation.user.emailAddress,
         dst_media_path: dstMedia.path,
         dst_media_timestamp: dstMedia.timestamp
-            .toISOString().slice(0,19).replace('T', ' ')
+            .toISOString().slice(0,19).replace('T', ' '),
+        src_user_id: srcStation.user.userId,
+        dst_user_id: dstStation.user.userId
     });
 }
 

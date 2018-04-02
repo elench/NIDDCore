@@ -9,10 +9,10 @@ const { Cam } = require('onvif');
 
 const argv = configureYargs(yargs);
 const props = {
-    hostname: process.env.CAM_HOSTNAME,
-    username: process.env.CAM_USERNAME,
-    password: process.env.CAM_PASSWORD,
-    port: process.env.CAM_PORT
+    hostname: process.env[`CAM${argv.camera}_HOSTNAME`],
+    username: process.env[`CAM${argv.camera}_USERNAME`],
+    password: process.env[`CAM${argv.camera}_PASSWORD`],
+    port: process.env[`CAM${argv.camera}_PORT`]
 };
 
 const command = argv._[0];
@@ -190,11 +190,11 @@ function reboot(cam) {
 
 function configureYargs(yargs) {
     return yargs
-        //.option('json', {
-        //    alias: 'j'
-        //})
-        //.config('json', 'JSON file containing IP camera properties')
-        //.demandOption('json', 'You must enter path to JSON file')
+        .option('camera', {
+            alias: 'c',
+            describe: 'Number that identifies the camera (check .env)'
+        })
+        .demandOption('camera', 'You must provide a camera (number)')
         .command('get-presets', 'Display camera presets')
         .command('get-status', 'Display camera status')
         .command('get-stream-uri', 'Display stream URI')

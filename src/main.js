@@ -2,6 +2,7 @@ const { fork } = require('child_process');
 const niddEvent = require('./lib/NIDDEvent').createNiddEvent();
 const { initWorkstations } = require('./lib/initWorkstations');
 const { Workstation } = require('./lib/Workstation');
+const { decToIp } = require('./lib/ip-decimal');
 
 const eventList = [];
 const watcher = fork('./src/db-watcher.js');
@@ -22,9 +23,9 @@ watcher.on('message', snortAlert => {
 
     const event = {
         snortAlert,
-        srcStation: stations[snortAlert.ip_src] ||
+        srcStation: stations[decToIp(snortAlert.ip_src)] ||
                     stations['void'],
-        dstStation: stations[snortAlert.ip_dst] ||
+        dstStation: stations[decToIp(snortAlert.ip_dst)] ||
                     stations['void']
     };
 

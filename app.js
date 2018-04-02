@@ -104,7 +104,7 @@ async (req, res) => {
     console.log(offset);
 
     const reports = await niddReport.getNiddReport(limit, offset);
-    console.log(reports);
+    //console.log(reports);
 
     for (report of reports) {
         report.timestamp = `${report.timestamp.toLocaleDateString()} ${report.timestamp.toLocaleTimeString()}`;
@@ -134,9 +134,12 @@ ensureLoggedIn(),
 async (req, res) => {
     const oldUsername = app.locals.user.username;
     const username = req.body.newUser;
+    const firstName = req.body.userFirstName;
+    const lastName = req.body.userLastName;
     let result;
 
-    result = await users.changeUsername(oldUsername, username);
+    result = await users.changeUsername(oldUsername,
+        username, firstName, lastName);
 
     console.log(result);
 
@@ -192,13 +195,14 @@ ensureLoggedIn(),
 app.get('/report/:reportId',
 ensureLoggedIn(),
 async (req, res, next) => {
-    console.log(req.params.reportId);
+    //console.log(req.params.reportId);
     let rep = await niddReport.getReportById(req.params.reportId);
     console.log('rep:', rep);
     if (rep) {
         res.render('report', {
             title: 'Alert Summary Report',
-            report: rep
+            report: rep,
+            fullName: users.getFullName(app.locals.user.id)
         });
     }
     else {
@@ -216,7 +220,7 @@ app.use((req, res) => {
     res.status(404).render('404');
 });
 
-app.listen(3000, err => {
+app.listen(8080, err => {
     if (err) {
         console.log(err);
     }

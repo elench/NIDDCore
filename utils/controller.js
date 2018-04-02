@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '../.env'});
 const http = require('http');
 const readline = require('readline');
 const keypress = require('keypress');
@@ -9,10 +10,10 @@ const Cam = require('onvif').Cam;
 const argv = configureYargs(yargs);
 
 const cam_obj = {
-    hostname: argv.hostname,
-    username: argv.username,
-    password: argv.password,
-    port: 80
+    hostname: process.env[`CAM${argv.camera}_HOSTNAME`],
+    username: process.env[`CAM${argv.camera}_USERNAME`],
+    password: process.env[`CAM${argv.camera}_PASSWORD`],
+    port: process.env[`CAM${argv.camera}_PORT`]
 };
 
 function connect() {
@@ -262,11 +263,11 @@ function cam_callback(err) {
 
 function configureYargs(yargs) {
     return yargs
-        .option('json', {
-            alias: 'j'
+        .option('camera', {
+            alias: 'c',
+            describe: 'Number that identifies the camera (check .env)'
         })
-        .config('json', 'JSON file containing IP camera properties')
-        .demandOption('json', 'You must enter path to JSON file')
+        .demandOption('camera', 'You must provide a camera (number)')
     /*
         .option('hostname', {
             alias: 'h',

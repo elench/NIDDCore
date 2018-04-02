@@ -35,7 +35,7 @@ function initWorkstations() {
 
             try {
                 const cam = await new NIDDCamera({
-                    hostname: decToIp(station.hostname),
+                    hostname: station.hostname,
                     username: station.username,
                     password: station.password,
                     port: station.port
@@ -56,7 +56,7 @@ function initWorkstations() {
                 let hostname = station.hostname;
                 if (!(hostname in cameras)) {
                     cameras[hostname] = new Camera(
-                        decToIp(parseInt(hostname)),
+                        hostname,
                         station.username,
                         station.password,
                         station.port
@@ -80,7 +80,7 @@ function initWorkstations() {
             catch (err) {
                 console.log(err);
                 console.log([
-                    `Camera "${decToIp(station.hostname)}"`,
+                    `Camera "${station.hostname}"`,
                     `for user "${station.first_name}" not found in network.`
                 ].join(' '));
             }

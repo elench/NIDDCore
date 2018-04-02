@@ -20,7 +20,7 @@ const eventWatcher = mysql({
 
 let prevAlert = {};
 
-eventWatcher.add('niddtestdb.event',
+eventWatcher.add('nidddb.event',
     function(oldRow, newRow, event) {
         // Wait 200 milliseconds to give barnyard2 enough time to finish
         // writing data to database
@@ -48,7 +48,7 @@ eventWatcher.add('niddtestdb.event',
                     //console.log(snortAlert);
                     setTimeout(() => {
                         prevAlert = {};
-                    }, 2000);
+                    }, 60000);
                 }
             })
             .catch(err => {
