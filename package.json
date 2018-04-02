@@ -15,7 +15,7 @@
       "connect-ensure-login": "^0.1.1",
       "cookie-parser": "^1.4.3",
       "dotenv": "^5.0.1",
-      "ejs": "^2.5.7",
+      "ejs": "^2.5.8",
       "express": "^4.16.3",
       "express-session": "^1.15.6",
       "keypress": "^0.2.1",
@@ -27,9 +27,9 @@
       "onvif": "^0.5.4",
       "passport": "^0.4.0",
       "passport-local": "^1.0.0",
-      "request": "^2.83.0",
+      "request": "^2.85.0",
       "tail": "^1.2.3",
-      "yargs": "^11.0.0"
+      "yargs": "^11.1.0"
    },
    "devDependencies": {}
 }
