@@ -1,12 +1,4 @@
-const mysql = require('mysql-events');
-
-const eventWatcher = mysql({
-    host: process.env.NIDD_DB_HOSTNAME,
-    user: process.env.MYSQL_ROOT_USER,
-    password: process.env.MYSQL_ROOT_PASSWORD
-});
-
-require('dotenv').config();
+require('dotenv').config({ path: require('path').resolve(process.cwd(), '.env') });
 const knex = require('knex')({
     client: 'mysql',
     connection: {
@@ -15,6 +7,14 @@ const knex = require('knex')({
         password: process.env.NIDD_DB_USERS_PASSWORD,
         database: process.env.NIDD_DB_NAME
     }
+});
+
+const mysql = require('mysql-events');
+
+const eventWatcher = mysql({
+    host: process.env.NIDD_DB_HOSTNAME,
+    user: process.env.MYSQL_ROOT_USER,
+    password: process.env.MYSQL_ROOT_PASSWORD
 });
 
 
@@ -44,7 +44,8 @@ eventWatcher.add('niddtestdb.event',
                     prevAlert.ip_src = snortAlert.ip_src;
                     prevAlert.ip_dst = snortAlert.ip_dst;
                     prevAlert.signature = snortAlert.signature;
-                    //process.send(snortAlert);
+                    process.send(snortAlert);
+                    //console.log(snortAlert);
                     setTimeout(() => {
                         prevAlert = {};
                     }, 2000);

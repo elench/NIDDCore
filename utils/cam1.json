@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
     "hostname": "10.10.10.59",
+=======
+    "hostname": "10.0.0.65",
+>>>>>>> c1eca324c5020822425580ada4044c81b12d78f3
     "username": "admin",
     "password": "neur0mancer",
     "port": 80

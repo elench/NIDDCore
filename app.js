@@ -129,7 +129,33 @@ ensureLoggedIn(),
     });
 });
 
-app.post('/editUser',
+app.post('/editUsername',
+ensureLoggedIn(),
+async (req, res) => {
+    const oldUsername = app.locals.user.username;
+    const username = req.body.newUser;
+    let result;
+
+    result = await users.changeUsername(oldUsername, username);
+
+    console.log(result);
+
+    if (result === 1) {
+        res.render('editUser', {
+            title: 'Edit User Information',
+            msg: 'Username Change Successful!'
+        });
+    }
+    else {
+        res.render('editUser', {
+            title: 'Edit User Information',
+            msg: 'Error! Username NOT changed.'
+        });
+    }
+
+});
+
+app.post('/editPassword',
 ensureLoggedIn(),
 (req, res) => {
     const username = app.locals.user.username;

@@ -29,6 +29,25 @@ module.exports.findById = (id, cb) => {
     }
 }
 
+module.exports.changeUsername = (oldUsername, username)=> {
+    return knex('user')
+    .where('username', oldUsername)
+    .update({
+        username
+    })
+    .then(result => {
+        for (let i = 0, len = records.length; i < len; ++i) {
+            let record = records[i];
+            if (record.username === oldUsername) {
+                record.username = username;
+                return result;
+            }
+        }
+    })
+    .catch(err => {
+        return err;
+    });
+}
 module.exports.changePassword = (username, password)=> {
     return knex('user')
     .where('username', username)

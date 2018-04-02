@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+
+require('dotenv').config({ path: '../.env'});
+
 const req = require('request');
 const fs = require('fs');
 const yargs = require('yargs');
@@ -6,10 +9,10 @@ const { Cam } = require('onvif');
 
 const argv = configureYargs(yargs);
 const props = {
-    hostname: argv.hostname,
-    username: argv.username,
-    password: argv.password,
-    port: argv.port
+    hostname: process.env.CAM_HOSTNAME,
+    username: process.env.CAM_USERNAME,
+    password: process.env.CAM_PASSWORD,
+    port: process.env.CAM_PORT
 };
 
 const command = argv._[0];
@@ -187,11 +190,11 @@ function reboot(cam) {
 
 function configureYargs(yargs) {
     return yargs
-        .option('json', {
-            alias: 'j'
-        })
-        .config('json', 'JSON file containing IP camera properties')
-        .demandOption('json', 'You must enter path to JSON file')
+        //.option('json', {
+        //    alias: 'j'
+        //})
+        //.config('json', 'JSON file containing IP camera properties')
+        //.demandOption('json', 'You must enter path to JSON file')
         .command('get-presets', 'Display camera presets')
         .command('get-status', 'Display camera status')
         .command('get-stream-uri', 'Display stream URI')

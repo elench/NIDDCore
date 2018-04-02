@@ -4,13 +4,12 @@ const { initWorkstations } = require('./lib/initWorkstations');
 const { Workstation } = require('./lib/Workstation');
 
 const eventList = [];
-const watcher = fork('db-watcher.js');
+const watcher = fork('./src/db-watcher.js');
 let stations = null;
 
 initWorkstations().then(result => {
     stations = result;
-    console.log(stations);
-
+    console.log('Total workstations:', stations.length - 1);
 })
 .catch(err => {
     console.log('calling init():', err);
@@ -59,10 +58,11 @@ function processEvent(event) {
     setStationsReady(event.srcStation, event.dstStation, false);
 
     console.log('-> sending event to processor: ', event.snortAlert);
-    const processor = fork('event-processor.js');
+    const processor = fork('./src/event-processor.js');
     processor.send(event);
 
     processor.on('message', ready => {
+        console.log('-> received exit message from event-processor:', ready);
         setStationsReady(event.srcStation, event.dstStation, true);
     });
 }
