@@ -4,11 +4,18 @@
    "description": "",
    "main": "main.js",
    "scripts": {
+<<<<<<< HEAD
        "start": "node ./src/main & node app",
        "nidd-services": "sudo systemctl start snort && sudo systemctl start barnyard2 && sudo systemctl start snorby",
        "stop-nidd-services": "sudo systemctl stop snort && sudo systemctl stop barnyard2 && sudo systemctl stop snorby",
       "viewer": "node app.js",
       "core": "node ./src/main"
+=======
+       "start": "node ./src/main && node app",
+       "viewer": "node app.js",
+       "core": "node ./src/main",
+       "test": "mocha **/test/*.test.js"
+>>>>>>> 57b982fa8b8fc618fdba40f5f895789f4486037f
    },
    "keywords": [],
    "author": "",
@@ -35,5 +42,7 @@
       "tail": "^1.2.3",
       "yargs": "^11.1.0"
    },
-   "devDependencies": {}
+   "devDependencies": {
+      "chai": "^4.1.2"
+   }
 }

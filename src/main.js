@@ -17,11 +17,11 @@ initWorkstations().then(result => {
 });
 
 watcher.on('message', snortAlert => {
-    console.log('|------- main: received event from watcher ------|');
+    console.log('|------- main: received niddAlert from watcher ------|');
     console.log(snortAlert);
     console.log('|------------------------------------------------|');
 
-    const event = {
+    const niddAlert = {
         snortAlert,
         srcStation: stations[decToIp(snortAlert.ip_src)] ||
                     stations['void'],
@@ -29,42 +29,42 @@ watcher.on('message', snortAlert => {
                     stations['void']
     };
 
-    if (event.srcStation.user.userId === '' &&
-        event.dstStation.user.userId === '') {
-        console.log('-> event discarded');
+    if (niddAlert.srcStation.user.userId === '' &&
+        niddAlert.dstStation.user.userId === '') {
+        console.log('-> niddAlert discarded');
     }
-    else if (event.srcStation.camera.ready && event.dstStation.camera.ready) {
-        processEvent(event);
-        console.log('-> main: event sent to processor');
+    else if (niddAlert.srcStation.camera.ready && niddAlert.dstStation.camera.ready) {
+        processEvent(niddAlert);
+        console.log('-> main: niddAlert sent to processor');
     }
     else {
-        eventList.push(event);
-        console.log('-> main: event enqueued');
+        eventList.push(niddAlert);
+        console.log('-> main: niddAlert enqueued');
     }
 
 });
 
 
 niddEvent.on('ready', () => {
-    const event = getNextEventFromQueue();
-    processEvent(event);
+    const niddAlert = getNextEventFromQueue();
+    processEvent(niddAlert);
 });
 
 
-function processEvent(event) {
-    if (!event) return null;
+function processEvent(niddAlert) {
+    if (!niddAlert) return null;
 
     console.log('-> eventList.length =', eventList.length)
 
-    setStationsReady(event.srcStation, event.dstStation, false);
+    setStationsReady(niddAlert.srcStation, niddAlert.dstStation, false);
 
-    console.log('-> sending event to processor: ', event.snortAlert);
+    console.log('-> sending niddAlert to processor: ', niddAlert.snortAlert);
     const processor = fork('./src/event-processor.js');
-    processor.send(event);
+    processor.send(niddAlert);
 
     processor.on('message', ready => {
         console.log('-> received exit message from event-processor:', ready);
-        setStationsReady(event.srcStation, event.dstStation, true);
+        setStationsReady(niddAlert.srcStation, niddAlert.dstStation, true);
     });
 }
 
