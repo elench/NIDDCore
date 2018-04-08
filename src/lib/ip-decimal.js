@@ -1,5 +1,5 @@
 function ipToDec(ip) {
-    const octets = address.split('.');
+    const octets = ip.split('.');
     octets.forEach((x, i, a) => a[i] = parseInt(x));
 
     if (!isValidIpAddress(octets)) {

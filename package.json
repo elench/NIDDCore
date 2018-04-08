@@ -4,8 +4,10 @@
    "description": "",
    "main": "main.js",
    "scripts": {
-      "viewer": "node app.js",
-      "core": "node ./src/main"
+       "start": "node ./src/main && node app",
+       "viewer": "node app.js",
+       "core": "node ./src/main",
+       "test": "mocha **/test/*.test.js"
    },
    "keywords": [],
    "author": "",
@@ -32,5 +34,7 @@
       "tail": "^1.2.3",
       "yargs": "^11.1.0"
    },
-   "devDependencies": {}
+   "devDependencies": {
+      "chai": "^4.1.2"
+   }
 }
