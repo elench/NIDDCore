@@ -108,7 +108,7 @@ process.on('exit', code => {
 function performActionSequence(station) {
     if (station.user.firstName === '') {
         return new Promise((resolve, reject) => {
-            resolve(new Media('void.jpg', new Date()));
+            resolve(new Media('nomedia.jpg', new Date()));
         });
     }
 

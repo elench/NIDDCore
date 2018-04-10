@@ -4,6 +4,9 @@
    "description": "",
    "main": "main.js",
    "scripts": {
+       "start": "node ./src/main & node app",
+       "nidd-services": "sudo systemctl start snort && sudo systemctl start barnyard2 && sudo systemctl start snorby",
+       "stop-nidd-services": "sudo systemctl stop snort && sudo systemctl stop barnyard2 && sudo systemctl stop snorby",
       "viewer": "node app.js",
       "core": "node ./src/main"
    },
